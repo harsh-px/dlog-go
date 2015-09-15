@@ -1,4 +1,4 @@
-package dlog
+package dlog // import "go.pedge.io/dlog"
 
 import (
 	"log"

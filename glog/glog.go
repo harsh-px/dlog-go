@@ -1,4 +1,4 @@
-package glog
+package glog // import "go.pedge.io/dlog/glog"
 
 import (
 	"fmt"

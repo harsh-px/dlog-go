@@ -1,4 +1,4 @@
-package protolog
+package protolog // import "go.pedge.io/dlog/protolog"
 
 import (
 	"os"

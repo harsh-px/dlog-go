@@ -1,4 +1,4 @@
-package logrus
+package logrus // import "go.pedge.io/dlog/logrus"
 
 import (
 	"github.com/Sirupsen/logrus"
