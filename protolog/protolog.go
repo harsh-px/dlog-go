@@ -8,7 +8,7 @@ import (
 )
 
 func init() {
-	dlog.SetLogger(NewLogger(protolog.NewStandardLogger(protolog.NewFileFlusher(os.Stderr))))
+	dlog.SetLogger(NewLogger(protolog.NewStandardLogger(protolog.NewStandardWritePusher(protolog.NewFileFlusher(os.Stderr)))))
 }
 
 type logger struct {
