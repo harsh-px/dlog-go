@@ -1,17 +1,3 @@
-.PHONY: \
-	all \
-	deps \
-	updatedeps \
-	testdeps \
-	updatetestdeps \
-	build \
-	lint \
-	vet \
-	errcheck \
-	pretest \
-	test \
-	clean
-
 all: test
 
 deps:
@@ -52,3 +38,17 @@ test: testdeps pretest
 
 clean:
 	go clean ./...
+
+.PHONY: \
+	all \
+	deps \
+	updatedeps \
+	testdeps \
+	updatetestdeps \
+	build \
+	lint \
+	vet \
+	errcheck \
+	pretest \
+	test \
+	clean
