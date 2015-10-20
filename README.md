@@ -1,6 +1,6 @@
 [![CircleCI](https://circleci.com/gh/peter-edge/go-dlog/tree/master.png)](https://circleci.com/gh/peter-edge/go-dlog/tree/master)
-[![API Documentation](http://img.shields.io/badge/api-Godoc-blue.svg?style=flat-square)](https://godoc.org/go.pedge.io/dlog)
-[![GitHub License](https://img.shields.io/github/license/peter-edge/go-dlog.svg?style=flat-square)](https://github.com/peter-edge/go-dlog/blob/master/LICENSE)
+[![GoDoc](http://img.shields.io/badge/api-godoc-blue.svg)](https://godoc.org/go.pedge.io/dlog)
+[![MIT License](http://img.shields.io/badge/license-mit-blue.svg)](https://github.com/peter-edge/go-dlog/blob/master/LICENSE)
 
 dlog wraps common functionality for common golang logging packages.
 
