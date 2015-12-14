@@ -2,7 +2,7 @@
 [![GoDoc](http://img.shields.io/badge/GoDoc-Reference-blue.svg)](https://godoc.org/go.pedge.io/dlog)
 [![MIT License](http://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/peter-edge/go-dlog/blob/master/LICENSE)
 
-dlog wraps common functionality for common golang logging packages.
+dlog (delegating log) wraps common functionality for common golang logging packages.
 
 The `dlog.Logger` interface wraps the common logging functionality. Every method on `dlog.Logger`
 is also a global method on the `dlog` package. Given an implementation of `dlog.Logger`, you can
