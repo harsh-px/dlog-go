@@ -1,14 +1,12 @@
 package protolog // import "go.pedge.io/dlog/protolog"
 
 import (
-	"os"
-
 	"go.pedge.io/dlog"
 	"go.pedge.io/protolog"
 )
 
 func init() {
-	dlog.SetLogger(NewLogger(protolog.NewLogger(protolog.NewDefaultTextWritePusher(protolog.NewFileFlusher(os.Stderr)), protolog.LoggerOptions{})))
+	dlog.SetLogger(NewLogger(protolog.DefaultLogger))
 }
 
 type logger struct {
