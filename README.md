@@ -1,7 +1,7 @@
-[![CircleCI](https://circleci.com/gh/peter-edge/go-dlog/tree/master.png)](https://circleci.com/gh/peter-edge/go-dlog/tree/master)
-[![Go Report Card](http://goreportcard.com/badge/peter-edge/go-dlog)](http://goreportcard.com/report/peter-edge/go-dlog)
+[![CircleCI](https://circleci.com/gh/peter-edge/dlog-go/tree/master.png)](https://circleci.com/gh/peter-edge/dlog-go/tree/master)
+[![Go Report Card](http://goreportcard.com/badge/peter-edge/dlog-go)](http://goreportcard.com/report/peter-edge/dlog-go)
 [![GoDoc](http://img.shields.io/badge/GoDoc-Reference-blue.svg)](https://godoc.org/go.pedge.io/dlog)
-[![MIT License](http://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/peter-edge/go-dlog/blob/master/LICENSE)
+[![MIT License](http://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/peter-edge/dlog-go/blob/master/LICENSE)
 
 dlog (delegating log) wraps common functionality for common golang logging packages.
 
