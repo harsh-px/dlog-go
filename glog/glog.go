@@ -9,6 +9,7 @@ import (
 func init() {
 	dlog.SetLogger(
 		dlog.NewLogger(
+			dlog.DefaultLevel,
 			glog.Infoln,
 			map[dlog.Level]func(...interface{}){
 				dlog.LevelDebug: glog.Infoln,

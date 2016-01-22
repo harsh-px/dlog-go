@@ -39,11 +39,18 @@ import (
 	"log"
 	"os"
 	"strings"
+	"sync"
 	"unicode"
 )
 
 var (
-	globalLogger = NewStdLogger(log.New(os.Stderr, "", log.LstdFlags))
+	// DefaultLevel is the default Level.
+	DefaultLevel = LevelInfo
+
+	globalLogger   = NewStdLogger(DefaultLevel, log.New(os.Stderr, "", log.LstdFlags))
+	globalLevel    = DefaultLevel
+	globalLevelSet = false
+	globalLock     = &sync.Mutex{}
 )
 
 // BaseLogger is the Logger's log functionality, split from WithField/WithFields for easier wrapping of other libraries.
@@ -67,13 +74,30 @@ type BaseLogger interface {
 // Logger is an interface that all logging implementations must implement.
 type Logger interface {
 	BaseLogger
+	AtLevel(level Level) Logger
 	WithField(key string, value interface{}) Logger
 	WithFields(fields map[string]interface{}) Logger
 }
 
 // SetLogger sets the global logger used by dlog.
 func SetLogger(logger Logger) {
+	globalLock.Lock()
+	defer globalLock.Unlock()
+	if globalLevelSet {
+		logger = logger.AtLevel(globalLevel)
+	}
 	globalLogger = logger
+}
+
+// SetLevel sets the global Level.
+func SetLevel(level Level) {
+	globalLock.Lock()
+	defer globalLock.Unlock()
+	if globalLevel != level {
+		globalLogger = globalLogger.AtLevel(level)
+	}
+	globalLevel = level
+	globalLevelSet = true
 }
 
 // NewLogger creates a new Logger using a print function, and optionally
@@ -83,13 +107,13 @@ func SetLogger(logger Logger) {
 // LevelNone overrides printFunc.
 //
 // printFunc is required.
-func NewLogger(printFunc func(...interface{}), levelToPrintFunc map[Level]func(...interface{})) Logger {
-	return newLogger(printFunc, levelToPrintFunc)
+func NewLogger(initialLevel Level, printFunc func(...interface{}), levelToPrintFunc map[Level]func(...interface{})) Logger {
+	return newLogger(initialLevel, printFunc, levelToPrintFunc)
 }
 
 // NewStdLogger creates a new Logger using a standard golang Logger.
-func NewStdLogger(l *log.Logger) Logger {
-	return newLogger(l.Println, nil)
+func NewStdLogger(initialLevel Level, l *log.Logger) Logger {
+	return newLogger(initialLevel, l.Println, nil)
 }
 
 // WithField calls WithField on the global Logger.
@@ -173,17 +197,22 @@ func Println(args ...interface{}) {
 }
 
 type logger struct {
+	level            Level
 	levelToPrintFunc map[Level]func(...interface{})
 	fields           map[string]interface{}
 }
 
-func newLogger(printFunc func(...interface{}), levelToPrintFunc map[Level]func(...interface{})) *logger {
+func newLogger(initialLevel Level, printFunc func(...interface{}), levelToPrintFunc map[Level]func(...interface{})) *logger {
 	if printFunc == nil {
 		// really not a fan of this, but since this is generally called at initialization, just makes things
 		// easier for now
 		panic("dlog: printFunc is nil")
 	}
-	return &logger{getLevelToPrintFunc(printFunc, levelToPrintFunc), make(map[string]interface{}, 0)}
+	return &logger{initialLevel, getLevelToPrintFunc(printFunc, levelToPrintFunc), make(map[string]interface{}, 0)}
+}
+
+func (l *logger) AtLevel(level Level) Logger {
+	return &logger{level, l.levelToPrintFunc, l.fields}
 }
 
 func (l *logger) WithField(key string, value interface{}) Logger {
@@ -198,7 +227,7 @@ func (l *logger) WithFields(fields map[string]interface{}) Logger {
 	for key, value := range fields {
 		newFields[key] = value
 	}
-	return &logger{l.levelToPrintFunc, newFields}
+	return &logger{l.level, l.levelToPrintFunc, newFields}
 }
 
 func (l *logger) Debugf(format string, args ...interface{}) {
@@ -262,6 +291,9 @@ func (l *logger) Println(args ...interface{}) {
 }
 
 func (l *logger) print(level Level, value string) {
+	if level < l.level && l.level != LevelNone {
+		return
+	}
 	// expected to be ok since we covered this internally
 	printFunc, ok := l.levelToPrintFunc[level]
 	if !ok {

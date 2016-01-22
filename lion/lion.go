@@ -6,7 +6,11 @@ import (
 )
 
 func init() {
-	dlog.SetLogger(newLogger(lion.DefaultLogger))
+	lion.AddGlobalHook(
+		func(lionLogger lion.Logger) {
+			dlog.SetLogger(newLogger(lionLogger))
+		},
+	)
 }
 
 type logger struct {
@@ -16,6 +20,12 @@ type logger struct {
 
 func newLogger(l lion.Logger) *logger {
 	return &logger{l, l}
+}
+
+func (l *logger) AtLevel(level dlog.Level) dlog.Logger {
+	// TODO(pedge): don't be lazy, make an actual map between dlog.Level and lion.Level
+	// you just copy/pasted lion_level.go to dlog_level.go
+	return newLogger(l.l.AtLevel(lion.Level(level)))
 }
 
 func (l *logger) WithField(key string, value interface{}) dlog.Logger {
