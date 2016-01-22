@@ -15,13 +15,14 @@ func register(logger dlog.Logger) {
 }
 ```
 
-To make things simple, packages for glog, logrus, and protolog are given with the ability to blank import:
+To make things simple, packages for glog, logrus, protolog, and lion are given with the ability to blank import:
 
 ```go
 import (
   _ "go.pedge.io/dlog/glog" // set glog as the global logger
   _ "go.pedge.io/dlog/logrus" // set logrus as the global logger with default settings
   _ "go.pedge.io/dlog/protolog" // set protolog as the global logger with default settings
+  _ "go.pedge.io/dlog/lion" // set lion as the global logger with default settings
 )
 ```
 
