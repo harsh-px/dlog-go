@@ -39,4 +39,5 @@ func init() { // or anywhere
 }
 ```
 
-By default, golang's standard logger is used.
+By default, golang's standard logger is used. This is not recommended, however, as the implementation
+with the WithFields function is slow. It would be better to choose a different implementation in most cases.

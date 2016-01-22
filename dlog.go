@@ -29,21 +29,25 @@ Or, do something more custom:
 	  dlog.SetLogger(logger)
 	}
 
-By default, golang's standard logger is used.
+By default, golang's standard logger is used. This is not recommended, however, as the implementation
+with the WithFields function is slow. It would be better to choose a different implementation in most cases.
 */
 package dlog // import "go.pedge.io/dlog"
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"strings"
+	"unicode"
 )
 
 var (
-	globalLogger = NewLogger(log.New(os.Stderr, "", log.LstdFlags))
+	globalLogger = NewStdLogger(log.New(os.Stderr, "", log.LstdFlags))
 )
 
-// Logger is an interface that all logging implementations must implement.
-type Logger interface {
+// BaseLogger is the Logger's log functionality, split from WithField/WithFields for easier wrapping of other libraries.
+type BaseLogger interface {
 	Debugf(format string, args ...interface{})
 	Debugln(args ...interface{})
 	Infof(format string, args ...interface{})
@@ -60,14 +64,42 @@ type Logger interface {
 	Println(args ...interface{})
 }
 
+// Logger is an interface that all logging implementations must implement.
+type Logger interface {
+	BaseLogger
+	WithField(key string, value interface{}) Logger
+	WithFields(fields map[string]interface{}) Logger
+}
+
 // SetLogger sets the global logger used by dlog.
 func SetLogger(logger Logger) {
 	globalLogger = logger
 }
 
-// NewLogger creates a new Logger using a standard log.Logger.
-func NewLogger(l *log.Logger) Logger {
-	return newLogger(l)
+// NewLogger creates a new Logger using a print function, and optionally
+// specific Level to print functions (levelToPrintFunc can be nil).
+//
+// printFunc is used if a Level is not represented.
+// LevelNone overrides printFunc.
+//
+// printFunc is required.
+func NewLogger(printFunc func(...interface{}), levelToPrintFunc map[Level]func(...interface{})) Logger {
+	return newLogger(printFunc, levelToPrintFunc)
+}
+
+// NewStdLogger creates a new Logger using a standard golang Logger.
+func NewStdLogger(l *log.Logger) Logger {
+	return newLogger(l.Println, nil)
+}
+
+// WithField calls WithField on the global Logger.
+func WithField(key string, value interface{}) Logger {
+	return globalLogger.WithField(key, value)
+}
+
+// WithFields calls WithFields on the global Logger.
+func WithFields(fields map[string]interface{}) Logger {
+	return globalLogger.WithFields(fields)
 }
 
 // Debugf logs at the debug level with the semantics of fmt.Printf.
@@ -141,41 +173,138 @@ func Println(args ...interface{}) {
 }
 
 type logger struct {
-	*log.Logger
+	levelToPrintFunc map[Level]func(...interface{})
+	fields           map[string]interface{}
 }
 
-func newLogger(l *log.Logger) *logger {
-	return &logger{l}
+func newLogger(printFunc func(...interface{}), levelToPrintFunc map[Level]func(...interface{})) *logger {
+	if printFunc == nil {
+		// really not a fan of this, but since this is generally called at initialization, just makes things
+		// easier for now
+		panic("dlog: printFunc is nil")
+	}
+	return &logger{getLevelToPrintFunc(printFunc, levelToPrintFunc), make(map[string]interface{}, 0)}
+}
+
+func (l *logger) WithField(key string, value interface{}) Logger {
+	return l.WithFields(map[string]interface{}{key: value})
+}
+
+func (l *logger) WithFields(fields map[string]interface{}) Logger {
+	newFields := make(map[string]interface{}, len(l.fields)+len(fields))
+	for key, value := range l.fields {
+		newFields[key] = value
+	}
+	for key, value := range fields {
+		newFields[key] = value
+	}
+	return &logger{l.levelToPrintFunc, newFields}
 }
 
 func (l *logger) Debugf(format string, args ...interface{}) {
-	l.Printf(format, args...)
+	l.print(LevelDebug, fmt.Sprintf(format, args...))
 }
 
 func (l *logger) Debugln(args ...interface{}) {
-	l.Println(args...)
+	l.print(LevelDebug, fmt.Sprint(args...))
 }
 
 func (l *logger) Infof(format string, args ...interface{}) {
-	l.Printf(format, args...)
+	l.print(LevelInfo, fmt.Sprintf(format, args...))
 }
 
 func (l *logger) Infoln(args ...interface{}) {
-	l.Println(args...)
+	l.print(LevelInfo, fmt.Sprint(args...))
 }
 
 func (l *logger) Warnf(format string, args ...interface{}) {
-	l.Printf(format, args...)
+	l.print(LevelWarn, fmt.Sprintf(format, args...))
 }
 
 func (l *logger) Warnln(args ...interface{}) {
-	l.Println(args...)
+	l.print(LevelWarn, fmt.Sprint(args...))
 }
 
 func (l *logger) Errorf(format string, args ...interface{}) {
-	l.Printf(format, args...)
+	l.print(LevelError, fmt.Sprintf(format, args...))
 }
 
 func (l *logger) Errorln(args ...interface{}) {
-	l.Println(args...)
+	l.print(LevelError, fmt.Sprint(args...))
+}
+
+func (l *logger) Fatalf(format string, args ...interface{}) {
+	l.print(LevelFatal, fmt.Sprintf(format, args...))
+	os.Exit(1)
+}
+
+func (l *logger) Fatalln(args ...interface{}) {
+	l.print(LevelFatal, fmt.Sprint(args...))
+	os.Exit(1)
+}
+
+func (l *logger) Panicf(format string, args ...interface{}) {
+	l.print(LevelPanic, fmt.Sprintf(format, args...))
+	panic(fmt.Sprintf(format, args...))
+}
+
+func (l *logger) Panicln(args ...interface{}) {
+	l.print(LevelPanic, fmt.Sprint(args...))
+	panic(fmt.Sprint(args...))
+}
+
+func (l *logger) Printf(format string, args ...interface{}) {
+	l.print(LevelNone, fmt.Sprintf(format, args...))
+}
+
+func (l *logger) Println(args ...interface{}) {
+	l.print(LevelNone, fmt.Sprint(args...))
+}
+
+func (l *logger) print(level Level, value string) {
+	// expected to be ok since we covered this internally
+	printFunc, ok := l.levelToPrintFunc[level]
+	if !ok {
+		printFunc, ok = l.levelToPrintFunc[LevelNone]
+		if !ok {
+			panic("dlog: cannot find any printFunc")
+		}
+	}
+	fieldsString := l.getFieldsString()
+	if fieldsString == "" {
+		printFunc(value)
+	} else {
+		printFunc(fmt.Sprintf("%s %s", strings.TrimRightFunc(value, unicode.IsSpace), fieldsString))
+	}
+}
+
+func (l *logger) getFieldsString() string {
+	if len(l.fields) == 0 {
+		return ""
+	}
+	values := make([]string, len(l.fields))
+	i := 0
+	for key, value := range l.fields {
+		values[i] = fmt.Sprintf("%s=%v", key, value)
+		i++
+	}
+	return strings.Join(values, " ")
+}
+
+func getLevelToPrintFunc(printFunc func(...interface{}), inputLevelToPrintFunc map[Level]func(...interface{})) map[Level]func(...interface{}) {
+	levelToPrintFunc := make(map[Level]func(...interface{}))
+	if inputLevelToPrintFunc != nil {
+		for level, inputPrintFunc := range inputLevelToPrintFunc {
+			levelToPrintFunc[level] = inputPrintFunc
+		}
+	}
+	if _, ok := levelToPrintFunc[LevelNone]; !ok {
+		levelToPrintFunc[LevelNone] = printFunc
+	}
+	for level := range levelToName {
+		if _, ok := levelToPrintFunc[level]; !ok {
+			levelToPrintFunc[level] = printFunc
+		}
+	}
+	return levelToPrintFunc
 }
