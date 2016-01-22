@@ -8,9 +8,14 @@ import (
 func init() {
 	protolog.AddGlobalHook(
 		func(protologLogger protolog.Logger) {
-			dlog.SetLogger(newLogger(protologLogger))
+			dlog.SetLogger(NewLogger(protologLogger))
 		},
 	)
+}
+
+// NewLogger returns a new dlog.Logger for the given protolog.Logger.
+func NewLogger(protologLogger protolog.Logger) dlog.Logger {
+	return newLogger(protologLogger)
 }
 
 type logger struct {

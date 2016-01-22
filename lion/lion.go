@@ -8,9 +8,14 @@ import (
 func init() {
 	lion.AddGlobalHook(
 		func(lionLogger lion.Logger) {
-			dlog.SetLogger(newLogger(lionLogger))
+			dlog.SetLogger(NewLogger(lionLogger))
 		},
 	)
+}
+
+// NewLogger returns a new dlog.Logger for the given lion.Logger.
+func NewLogger(lionLogger lion.Logger) dlog.Logger {
+	return newLogger(lionLogger)
 }
 
 type logger struct {

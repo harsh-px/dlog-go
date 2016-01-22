@@ -47,7 +47,7 @@ var (
 	// DefaultLevel is the default Level.
 	DefaultLevel = LevelInfo
 
-	globalLogger   = NewStdLogger(DefaultLevel, log.New(os.Stderr, "", log.LstdFlags))
+	globalLogger   = NewStdLogger(log.New(os.Stderr, "", log.LstdFlags))
 	globalLevel    = DefaultLevel
 	globalLevelSet = false
 	globalLock     = &sync.Mutex{}
@@ -107,13 +107,13 @@ func SetLevel(level Level) {
 // LevelNone overrides printFunc.
 //
 // printFunc is required.
-func NewLogger(initialLevel Level, printFunc func(...interface{}), levelToPrintFunc map[Level]func(...interface{})) Logger {
-	return newLogger(initialLevel, printFunc, levelToPrintFunc)
+func NewLogger(printFunc func(...interface{}), levelToPrintFunc map[Level]func(...interface{})) Logger {
+	return newLogger(globalLevel, printFunc, levelToPrintFunc)
 }
 
 // NewStdLogger creates a new Logger using a standard golang Logger.
-func NewStdLogger(initialLevel Level, l *log.Logger) Logger {
-	return newLogger(initialLevel, l.Println, nil)
+func NewStdLogger(l *log.Logger) Logger {
+	return newLogger(globalLevel, l.Println, nil)
 }
 
 // WithField calls WithField on the global Logger.
