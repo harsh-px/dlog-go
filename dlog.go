@@ -20,13 +20,22 @@ To make things simple, packages for glog, logrus, protolog, and lion are given w
 
 Or, do something more custom:
 
+	import (
+	  "os"
+
+	  "go.pedge.io/dlog"
+	  dloglogrus "go.pedge.io/dlog/logrus"
+
+	  "github.com/Sirupsen/logrus"
+	)
+
 	func init() { // or anywhere
 	  logger := logrus.New()
 	  logger.Out = os.Stdout
 	  logger.Formatter = &logrus.TextFormatter{
 		ForceColors: true,
 	  }
-	  dlog.SetLogger(logger)
+	  dlog.SetLogger(dloglogrus.NewLogger(logger))
 	}
 
 By default, golang's standard logger is used. This is not recommended, however, as the implementation

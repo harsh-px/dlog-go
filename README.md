@@ -29,13 +29,22 @@ import (
 Or, do something more custom:
 
 ```go
+import (
+  "os"
+
+  "go.pedge.io/dlog"
+  dloglogrus "go.pedge.io/dlog/logrus"
+
+  "github.com/Sirupsen/logrus"
+)
+
 func init() { // or anywhere
   logger := logrus.New()
   logger.Out = os.Stdout
   logger.Formatter = &logrus.TextFormatter{
     ForceColors: true,
   }
-  dlog.SetLogger(logger)
+  dlog.SetLogger(dloglogrus.NewLogger(logger))
 }
 ```
 
