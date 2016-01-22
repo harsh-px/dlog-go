@@ -61,6 +61,8 @@ func newLogger(l logrusLogger) *logger {
 }
 
 func (l *logger) AtLevel(level dlog.Level) dlog.Logger {
+	// TODO(pedge): not thread safe, tradeoff here
+	// TODO(pedge): neither implementation checks map, even though we expect coverage
 	l.l.SetLevel(level)
 	return l
 }
