@@ -1,3 +1,8 @@
+/*
+Package dlog_glog provides glog functionality for dlog.
+
+https://github.com/golang/glog
+*/
 package dlog_glog // import "go.pedge.io/dlog/glog"
 
 import (

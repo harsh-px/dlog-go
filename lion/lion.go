@@ -1,3 +1,8 @@
+/*
+Package dlog_lion provides lion functionality for dlog.
+
+https://go.pedge.io/lion
+*/
 package dlog_lion // import "go.pedge.io/dlog/lion"
 
 import (

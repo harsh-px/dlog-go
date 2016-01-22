@@ -1,3 +1,8 @@
+/*
+Package dlog_log15 provides log15 functionality for dlog.
+
+https://github.com/inconshreveable/log15
+*/
 package dlog_log15 // import "go.pedge.io/dlog/log15"
 
 import (

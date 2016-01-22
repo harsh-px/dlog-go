@@ -1,3 +1,10 @@
+/*
+Package dlog_protolog provides protolog functionality for dlog.
+
+https://go.pedge.io/protolog
+
+Protolog is deprecated in favor of lion, so it is recommended to move to lion.
+*/
 package dlog_protolog // import "go.pedge.io/dlog/protolog"
 
 import (
