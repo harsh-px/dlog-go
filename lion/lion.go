@@ -1,11 +1,12 @@
-package lion // import "go.pedge.io/dlog/lion"
+package dlog_lion // import "go.pedge.io/dlog/lion"
 
 import (
 	"go.pedge.io/dlog"
 	"go.pedge.io/lion"
 )
 
-func init() {
+// Register registers the default lion Logger as the dlog Logger.
+func Register() {
 	lion.AddGlobalHook(
 		func(lionLogger lion.Logger) {
 			dlog.SetLogger(NewLogger(lionLogger))

@@ -1,4 +1,4 @@
-package glog // import "go.pedge.io/dlog/glog"
+package dlog_glog // import "go.pedge.io/dlog/glog"
 
 import (
 	"go.pedge.io/dlog"
@@ -6,7 +6,8 @@ import (
 	"github.com/golang/glog"
 )
 
-func init() {
+// Register registers the default glog Logger as the dlog Logger.
+func Register() {
 	dlog.SetLogger(NewLogger())
 }
 

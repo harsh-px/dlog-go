@@ -1,11 +1,12 @@
-package protolog // import "go.pedge.io/dlog/protolog"
+package dlog_protolog // import "go.pedge.io/dlog/protolog"
 
 import (
 	"go.pedge.io/dlog"
 	"go.pedge.io/protolog"
 )
 
-func init() {
+// Register registers the default protolog Logger as the dlog Logger.
+func Register() {
 	protolog.AddGlobalHook(
 		func(protologLogger protolog.Logger) {
 			dlog.SetLogger(NewLogger(protologLogger))
