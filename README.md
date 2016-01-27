@@ -15,7 +15,7 @@ func register(logger dlog.Logger) {
 }
 ```
 
-To make things simple, packages for glog, logrus, log15, protolog, and lion are given with the ability to easily register
+To make things simple, packages for glog, logrus, log15, and lion are given with the ability to easily register
 their implementations as the default logger:
 
 ```go
@@ -24,7 +24,6 @@ import (
   "go.pedge.io/dlog/lion"
   "go.pedge.io/dlog/log15"
   "go.pedge.io/dlog/logrus"
-  "go.pedge.io/dlog/protolog"
 )
 
 func registrationFunctions() {
@@ -32,7 +31,6 @@ func registrationFunctions() {
   dlog_lion.Register() // set lion as the global logger with default settings
   dlog_log15.Register() // set log15 as the global logger with default settings
   dlog_logrus.Register() // set logrus as the global logger with default settings
-  dlog_protolog.Register() // set protolog as the global logger with default settings
 }
 ```
 

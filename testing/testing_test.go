@@ -9,7 +9,6 @@ import (
 	"go.pedge.io/dlog/lion"
 	"go.pedge.io/dlog/log15"
 	"go.pedge.io/dlog/logrus"
-	"go.pedge.io/dlog/protolog"
 )
 
 func TestPrint(t *testing.T) {
@@ -35,11 +34,6 @@ func TestPrintLog15(t *testing.T) {
 
 func TestPrintLogrus(t *testing.T) {
 	dlog_logrus.Register()
-	testPrint(t)
-}
-
-func TestPrintProtolog(t *testing.T) {
-	dlog_protolog.Register()
 	testPrint(t)
 }
 

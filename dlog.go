@@ -9,7 +9,7 @@ register it as the global logger by calling:
 	  dlog.SetLogger(logger)
 	}
 
-To make things simple, packages for glog, logrus, log15, protolog, and lion are given with the ability to easily register
+To make things simple, packages for glog, logrus, log15, and lion are given with the ability to easily register
 their implementations as the default logger:
 
 	import (
@@ -17,7 +17,6 @@ their implementations as the default logger:
 	  "go.pedge.io/dlog/lion"
 	  "go.pedge.io/dlog/log15"
 	  "go.pedge.io/dlog/logrus"
-	  "go.pedge.io/dlog/protolog"
 	)
 
 	func registrationFunctions() {
@@ -25,7 +24,6 @@ their implementations as the default logger:
 	  dlog_lion.Register() // set lion as the global logger with default settings
 	  dlog_log15.Register() // set log15 as the global logger with default settings
 	  dlog_logrus.Register() // set logrus as the global logger with default settings
-	  dlog_protolog.Register() // set protolog as the global logger with default settings
 	}
 
 Or, do something more custom:
