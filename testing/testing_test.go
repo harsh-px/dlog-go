@@ -9,6 +9,7 @@ import (
 	"go.pedge.io/dlog/lion"
 	"go.pedge.io/dlog/log15"
 	"go.pedge.io/dlog/logrus"
+	"go.pedge.io/dlog/zap"
 )
 
 func TestPrint(t *testing.T) {
@@ -34,6 +35,11 @@ func TestPrintLog15(t *testing.T) {
 
 func TestPrintLogrus(t *testing.T) {
 	dlog_logrus.Register()
+	testPrint(t)
+}
+
+func TestPrintZap(t *testing.T) {
+	dlog_zap.Register()
 	testPrint(t)
 }
 
