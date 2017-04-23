@@ -1,3 +1,6 @@
+machine:
+  environment:
+     GOPATH: "${HOME}/.go_workspace"
 dependencies:
   override:
     - mkdir -p "$(echo $GOPATH | cut -f 1 -d :)/src/go.pedge.io/dlog"
