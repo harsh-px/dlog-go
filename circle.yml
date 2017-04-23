@@ -4,11 +4,8 @@ machine:
 dependencies:
   override:
     - mkdir -p "$(echo $GOPATH | cut -f 1 -d :)/src/go.pedge.io/dlog"
-    - pwd
-    - ls -alh .
     - rsync -az --delete . "$(echo $GOPATH | cut -f 1 -d :)/src/go.pedge.io/dlog/"
-    - echo "$(echo $GOPATH | cut -f 1 -d :)/src/go.pedge.io/dlog"
-    - ls -alh "$(echo $GOPATH | cut -f 1 -d :)/src/go.pedge.io/dlog"
+    - make -C "$(echo $GOPATH | cut -f 1 -d :)/src/go.pedge.io/dlog" updatetestdeps
 test:
   override:
-    - make -C "$(echo $GOPATH | cut -f 1 -d :)/src/go.pedge.io/dlog" updatetestdeps test
+    - make -C "$(echo $GOPATH | cut -f 1 -d :)/src/go.pedge.io/dlog" test
