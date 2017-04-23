@@ -4,7 +4,9 @@ machine:
 dependencies:
   override:
     - mkdir -p "$(echo $GOPATH | cut -f 1 -d :)/src/go.pedge.io/dlog"
-    - rsync -azC --delete ./ "$(echo $GOPATH | cut -f 1 -d :)/src/go.pedge.io/dlog/"
+    - pwd
+    - ls -alh .
+    - rsync -azC --delete . "$(echo $GOPATH | cut -f 1 -d :)/src/go.pedge.io/dlog/"
     - echo "$(echo $GOPATH | cut -f 1 -d :)/src/go.pedge.io/dlog"
     - ls -alh "$(echo $GOPATH | cut -f 1 -d :)/src/go.pedge.io/dlog"
 test:
